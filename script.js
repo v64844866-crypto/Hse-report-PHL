@@ -9,17 +9,15 @@ window.onload = function() {
             const password = inputs[1].value.trim();
 
             // 1. एडमिन का आईडी और पासवर्ड (यह हर एक आईडी को कंट्रोल या देख सकता है)
-            const adminID = "Rajesh";
-            const adminPassword = "Rajesh123
-            const adminID="Murti:;
-            const adminId="Murti123:;
+            const adminID = "admin01";
+            const adminPassword = "SuperAdminPHL";
 
             // 2. सभी कर्मचारियों (Employees) की लिस्ट यहाँ जोड़ें
             const employees = {
                 "0301": "Vishal",   // ID: 0301, Password: Vishal
-                "0304":"Munna", // ID: 0304, Password: Munna
-                "0302": "Pardeep",   // ID: 0302, Password: Pardeep
-                "0303": "Omprakash"    // ID:0303, Password Omprakashआप जितनी चाहें उतनी ID यहाँ नीचे बढ़ा सकते हैं
+                "1025": "Munna", // ID: 1025, Password: Munna
+                "0302": "Rajesh123",   // ID: 0302, Password: Rajesh123
+                "0303": "murti456"    // आप जितनी चाहें उतनी ID यहाँ नीचे बढ़ा सकते हैं
             };
 
             // लॉगिन चेक करने का लॉजिक
@@ -38,6 +36,7 @@ window.onload = function() {
         });
     }
 };
+
 
 
     
