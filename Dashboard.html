@@ -3,142 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHL - User Dashboard</title>
+    <title>PHL - HSE Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f7f6; color: #333; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background-color: #f4f7f6; padding-bottom: 80px; }
+        .header { background-color: #157347; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 20px; }
         
-        /* Header */
-        .header { background-color: #157347; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .header h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; }
-        .user-profile { display: flex; align-items: center; gap: 10px; }
-        .user-profile i { font-size: 24px; }
-
-        /* Welcome Section */
-        .welcome-card { background: white; margin: 20px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 5px solid #157347; }
+        .welcome-card { background: white; margin: 20px; padding: 20px; border-radius: 12px; border-left: 5px solid #157347; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .welcome-card h2 { color: #157347; font-size: 22px; margin-bottom: 5px; }
-        .welcome-card p { color: #666; font-size: 14px; }
-
-        /* Grid System for 10 Modules */
-        .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; padding: 0 20px 20px 20px; }
+        .role-badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 5px; }
+        .badge-user { background: #eef2f1; color: #157347; }
+        .badge-admin { background: #fd7e14; color: white; }
+        .badge-super { background: #dc3545; color: white; }
         
-        .module-card { background: white; padding: 20px 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #eef2f1; position: relative; }
-        .module-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
-        
-        .module-card .badge { position: absolute; top: 10px; left: 15px; background: #eef2f1; color: #666; font-size: 11px; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .module-card i { font-size: 32px; margin-bottom: 12px; display: block; }
-        .module-card span { font-size: 13px; font-weight: 600; color: #444; display: block; line-height: 1.3; }
+        /* Admin View Section */
+        .admin-section { background: white; margin: 20px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; }
+        .admin-section h3 { color: #333; margin-bottom: 15px; font-size: 16px; border-bottom: 2px solid #eef2f1; padding-bottom: 5px; }
+        .user-selector { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
+        .status-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        .status-table th, .status-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .status-table th { background-color: #f8f9fa; }
 
-        /* Icons Colors matching your UI */
+        /* Grid for Modules */
+        .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; padding: 20px; }
+        .module-card { background: white; padding: 20px 10px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #eef2f1; transition: transform 0.2s; }
+        .module-card:hover { transform: translateY(-3px); }
+        .module-card i { font-size: 32px; margin-bottom: 10px; display: block; }
+        .module-card span { font-size: 13px; font-weight: 600; color: #333; display: block; }
+        
         .icon-present { color: #28a745; }
         .icon-absent { color: #dc3545; }
         .icon-tbt { color: #007bff; }
         .icon-mock { color: #6f42c1; }
         .icon-inspect { color: #17a2b8; }
         .icon-obs { color: #fd7e14; }
-        .icon-plan { color: #20c997; }
-        .icon-complaint { color: #e83e8c; }
-        .icon-notice { color: #ffc107; }
-        .icon-finance { color: #28a745; }
 
-        /* Bottom Nav Bar */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-        .nav-item { text-align: center; color: #666; cursor: pointer; font-size: 12px; text-decoration: none; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #ddd; }
+        .nav-item { text-align: center; color: #666; font-size: 12px; text-decoration: none; }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
         .nav-item.active { color: #157347; }
-        
-        body { padding-bottom: 70px; } /* Space for bottom nav */
     </style>
 </head>
 <body>
 
-    <!-- Top Header -->
     <div class="header">
-        <h1><i class="fa-solid fa-helmet-safety"></i> PHL HSE REPORT</h1>
-        <div class="user-profile">
-            <i class="fa-solid fa-circle-user"></i>
-        </div>
+        <h1 id="navTitle">PHL HSE SYSTEM</h1>
+        <div><i class="fa-solid fa-circle-user" style="font-size: 24px;"></i></div>
     </div>
 
-    <!-- Welcome Profile Banner -->
     <div class="welcome-card">
-        <h2>Welcome, Vishal Kumar</h2>
-        <p>Designation: HSE Officer</p>
+        <h2 id="welcomeName">Loading Profile...</h2>
+        <div id="roleTag"></div>
     </div>
 
-    <!-- 10 Modules Grid -->
+    <div id="adminPanel" class="admin-section">
+        <h3><i class="fa-solid fa-sliders"></i> Admin Control Panel</h3>
+        <label for="employeeSelect"><b>View Employee Dashboard:</b></label>
+        <select id="employeeSelect" class="user-selector" onchange="switchEmployeeView()">
+            <option value="">-- Select Employee ID --</option>
+            <option value="0301">0301 (Vishal)</option>
+        </select>
+
+        <h4>Live Attendance Status (All Users):</h4>
+        <table class="status-table">
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceRecords">
+                </tbody>
+        </table>
+    </div>
+
     <div class="modules-grid">
-        
-        <div class="module-card" onclick="alert('Attendance Marked: Present')">
-            <div class="badge">1</div>
-            <i class="fa-solid fa-circle-check icon-present"></i>
-            <span>Present</span>
+        <div class="module-card" onclick="triggerPunchIn()">
+            <i class="fa-solid fa-fingerprint icon-present"></i><span>Punch-In (Present)</span>
         </div>
-
-        <div class="module-card" onclick="alert('Attendance Marked: Absent')">
-            <div class="badge">2</div>
-            <i class="fa-solid fa-circle-xmark icon-absent"></i>
-            <span>Absent</span>
+        <div class="module-card" onclick="triggerAbsent()">
+            <i class="fa-solid fa-user-xmark icon-absent"></i><span>Mark Absent (Yes)</span>
         </div>
-
-        <div class="module-card" onclick="alert('Opening TBT Report Form...')">
-            <div class="badge">3</div>
-            <i class="fa-solid fa-file-invoice icon-tbt"></i>
-            <span>TBT Report / PWT</span>
+        <div class="module-card" onclick="openForm('TBT Report')">
+            <i class="fa-solid fa-file-invoice icon-tbt"></i><span>TBT Report / PWT</span>
         </div>
-
-        <div class="module-card" onclick="alert('Opening Mock Drill Report...')">
-            <div class="badge">4</div>
-            <i class="fa-solid fa-fire-extinguisher icon-mock"></i>
-            <span>Mock Drill Report & Training</span>
+        <div class="module-card" onclick="openForm('Mock Drill')">
+            <i class="fa-solid fa-fire-extinguisher icon-mock"></i><span>Mock Drill</span>
         </div>
-
-        <div class="module-card" onclick="alert('Opening Inspection Form...')">
-            <div class="badge">5</div>
-            <i class="fa-solid fa-magnifying-glass-chart icon-inspect"></i>
-            <span>Inspection</span>
+        <div class="module-card" onclick="openForm('Inspection')">
+            <i class="fa-solid fa-magnifying-glass-chart icon-inspect"></i><span>Inspection</span>
         </div>
-
-        <div class="module-card" onclick="alert('Opening Observation Form...')">
-            <div class="badge">6</div>
-            <i class="fa-solid fa-triangle-exclamation icon-obs"></i>
-            <span>Observation & Rectified</span>
+        <div class="module-card" onclick="openForm('Observation')">
+            <i class="fa-solid fa-triangle-exclamation icon-obs"></i><span>Observation</span>
         </div>
-
-        <div class="module-card" onclick="alert('Opening Monthly Plan...')">
-            <div class="badge">7</div>
-            <i class="fa-solid fa-calendar-days icon-plan"></i>
-            <span>Monthly Plan</span>
-        </div>
-
-        <div class="module-card" onclick="alert('Opening Complaint Register...')">
-            <div class="badge">8</div>
-            <i class="fa-solid fa-comments icon-complaint"></i>
-            <span>Complaint</span>
-        </div>
-
-        <div class="module-card" onclick="alert('Opening Notice Board...')">
-            <div class="badge">9</div>
-            <i class="fa-solid fa-bullhorn icon-notice"></i>
-            <span>Notice & Information</span>
-        </div>
-
-        <div class="module-card" onclick="alert('Opening Finance Module...')">
-            <div class="badge">10</div>
-            <i class="fa-solid fa-indian-rupee-sign icon-finance"></i>
-            <span>Finance</span>
-        </div>
-
     </div>
 
-    <!-- Bottom Navigation Bar -->
     <div class="bottom-nav">
         <div class="nav-item active"><i class="fa-solid fa-house"></i>Dashboard</div>
-        <div class="nav-item"><i class="fa-solid fa-file-shield"></i>Reports</div>
-        <div class="nav-item"><i class="fa-solid fa-bell"></i>Notifications</div>
-        <div class="nav-item"><i class="fa-solid fa-user"></i>Profile</div>
+        <div class="nav-item" onclick="location.href='index.html'"><i class="fa-solid fa-right-from-bracket"></i>Logout</div>
     </div>
 
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let role = urlParams.get('role');
+        let empId = urlParams.get('id') || "0301"; // डिफ़ॉल्ट विशाल
+
+        const welcomeName = document.getElementById('welcomeName');
+        const roleTag = document.getElementById('roleTag');
+        const navTitle = document.getElementById('navTitle');
+        const adminPanel = document.getElementById('adminPanel');
+
+        // यूज़र डेटा रेंडरिंग लॉजिक
+        if (role === 'superadmin') {
+            navTitle.innerText = "PHL HSE - SUPER ADMIN";
+            welcomeName.innerText = "Welcome, Rajesh";
+            roleTag.innerHTML = "<span class='role-badge badge-super'>SUPER ADMIN (ALL ACCESS)</span>";
+            adminPanel.style.display = "block";
+            loadAttendanceLogs();
+        } 
+        else if (role === 'admin') {
+            navTitle.innerText = "PHL HSE - ADMIN";
+            welcomeName.innerText = "Welcome, Murti";
+            roleTag.innerHTML = "<span class='role-badge badge-admin'>ADMIN CONTROL</span>";
+            adminPanel.style.display = "block";
+            loadAttendanceLogs();
+        } 
+        else {
+            navTitle.innerText = "PHL HSE - EMPLOYEE";
+            welcomeName.innerText = "Welcome, Vishal";
+            roleTag.innerHTML = "<span class='role-badge badge-user'>Employee ID: " + empId + "</span>";
+        }
+
+        // Punch In Logic
+        function triggerPunchIn() {
+            if (role === 'admin' || role === 'superadmin') {
+                alert("Admins cannot punch in attendance for themselves.");
+                return;
+            }
+            const timeNow = new Date().toLocaleTimeString();
+            localStorage.setItem("attendance_" + empId, JSON.stringify({ status: "🔴 PRESENT (PUNCHED IN)", time: timeNow }));
+            alert("Punch-In successful at " + timeNow);
+        }
+
+        // Absent Logic
+        function triggerAbsent() {
+            if (role === 'admin' || role === 'superadmin') {
+                alert("Admins cannot mark attendance logs here.");
+                return;
+            }
+            let confirmAbsent = confirm("Are you sure you want to mark ABSENT (Yes)?");
+            if (confirmAbsent) {
+                const timeNow = new Date().toLocaleTimeString();
+                localStorage.setItem("attendance_" + empId, JSON.stringify({ status: "❌ ABSENT", time: timeNow }));
+                alert("Marked Absent successfully.");
+            }
+        }
+
+        // Forms redirection placeholder
+        function openForm(formName) {
+            alert("Opening dynamic link file for: " + formName);
+        }
+
+        // Admin functionality: View other employee dashboards
+        function switchEmployeeView() {
+            const selectedUser = document.getElementById('employeeSelect').value;
+            if(selectedUser) {
+                alert("Opening Dashboard View for Employee: " + selectedUser);
+                window.location.href = "dashboard.html?role=user&id=" + selectedUser;
+            }
+        }
+
+        // Admin functionality: Load live logs
+        function loadAttendanceLogs() {
+            const recordsBody = document.getElementById('attendanceRecords');
+            const logData = JSON.parse(localStorage.getItem("attendance_0301")) || { status: "No Data", time: "--:--" };
+            
+            recordsBody.innerHTML = `
+                <tr>
+                    <td>0301</td>
+                    <td>Vishal</td>
+                    <td style="font-weight:bold; color: ${logData.status.includes('PRESENT') ? 'green' : 'red'}">${logData.status}</td>
+                    <td>${logData.time}</td>
+                </tr>
+            `;
+        }
+    </script>
 </body>
 </html>
+
