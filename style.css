@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSE REPORT - PHL</title>
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0B7A3D;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+.box{
+background:white;
+padding:30px;
+border-radius:15px;
+width:320px;
+text-align:center;
+box-shadow:0 0 15px rgba(0,0,0,.3);
+}
+h1{
+color:#0B7A3D;
+}
+input{
+width:90%;
+padding:12px;
+margin:10px;
+border:1px solid #ccc;
+border-radius:8px;
+}
+button{
+width:95%;
+padding:12px;
+background:#0B7A3D;
+color:white;
+border:none;
+border-radius:8px;
+font-size:18px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h1>HSE REPORT</h1>
+<h3>PHL</h3>
+
+<input type="text" placeholder="Employee ID">
+
+<input type="password" placeholder="Password">
+
+<button>LOGIN</button>
+
+</div>
+
+</body>
+</html>
