@@ -1,17 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>HSE REPORT - PHL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSE REPORT - PHL</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body style="font-family:Arial;background:#0b7a3d;color:white;text-align:center;padding:50px;">
-<h1>HSE REPORT</h1>
-<h2>PHL</h2>
+<body style="background-color: #157347; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
 
-<input type="text" placeholder="Employee ID"><br><br>
+    <div style="text-align: center;">
+        <h2>HSE REPORT</h2>
+        <h3>PHL</h3>
+        
+        <form style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <input type="text" placeholder="Employee ID" required style="padding: 5px; border: 1px solid #ccc; font-size: 14px;">
+            <input type="password" placeholder="Password" required style="padding: 5px; border: 1px solid #ccc; font-size: 14px;">
+            <button type="submit" style="padding: 5px 15px; cursor: pointer; font-size: 14px;">Login</button>
+        </form>
+    </div>
 
-<input type="password" placeholder="Password"><br><br>
-
-<button>Login</button>
-
+    <!-- यह लाइन जावास्क्रिप्ट को इस पेज से जोड़ती है -->
+    <script src="script.js"></script>
 </body>
 </html>
+
