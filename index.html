@@ -3,24 +3,569 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HSE REPORT - PHL</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body style="background-color: #157347; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+    <title>PHL HSE REPORT SYSTEM</title>
+    <!-- FontAwesome Icons & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #157347;
+            --primary-blue: #0d6efd;
+            --bg-light: #f4f7f6;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
 
-    <div style="text-align: center;">
-        <h2>HSE REPORT</h2>
-        <h3>PHL</h3>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-light); color: #333; }
+
+        .screen { display: none; min-height: 100vh; width: 100%; position: relative; padding-bottom: 70px; }
+        .screen.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==================== 1. LOGIN SCREEN ==================== */
+        .login-screen { display: none; background: #fff; justify-content: center; align-items: center; padding-bottom: 0; }
+        .login-screen.active { display: flex; flex-direction: column; }
+        .login-container { width: 100%; max-width: 400px; padding: 30px 20px; text-align: center; }
+        .logo-area { margin-bottom: 30px; }
+        .logo-area img { width: 120px; height: auto; }
+        .logo-area h1 { color: var(--primary-green); font-size: 26px; margin-top: 10px; font-weight: 700; }
+        .logo-area p { font-size: 12px; color: #666; letter-spacing: 1px; margin-top: 5px; }
         
-        <form style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
-            <input type="text" placeholder="Employee ID" required style="padding: 5px; border: 1px solid #ccc; font-size: 14px;">
-            <input type="password" placeholder="Password" required style="padding: 5px; border: 1px solid #ccc; font-size: 14px;">
-            <button type="submit" style="padding: 5px 15px; cursor: pointer; font-size: 14px;">Login</button>
-        </form>
+        .tab-container { display: flex; border-bottom: 2px solid #eee; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: none; font-weight: bold; color: #888; cursor: pointer; font-size: 14px; }
+        .tab-btn.active { color: var(--primary-green); border-bottom: 3px solid var(--primary-green); }
+        .tab-btn.admin-tab.active { color: var(--primary-blue); border-bottom: 3px solid var(--primary-blue); }
+
+        .input-group { position: relative; margin-bottom: 15px; text-align: left; }
+        .input-group i { position: absolute; left: 12px; top: 14px; color: #aaa; }
+        .input-group input, .input-group select { width: 100%; padding: 12px 12px 12px 38px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; background: #fafafa; }
+        .input-group input:focus { border-color: #999; }
+        
+        .login-btn { width: 100%; padding: 14px; border: none; border-radius: 8px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .login-btn.user-theme { background-color: var(--primary-green); }
+        .login-btn.admin-theme { background-color: var(--primary-blue); }
+
+        /* ==================== COMMON HEADER & NAV ==================== */
+        .app-header { background: var(--primary-green); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .app-header.admin-theme { background: var(--primary-blue); }
+        .app-header h2 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .profile-trigger { font-size: 22px; cursor: pointer; }
+
+        .welcome-section { background: white; margin: 15px; padding: 20px; border-radius: 12px; box-shadow: var(--card-shadow); border-left: 5px solid var(--primary-green); }
+        .welcome-section.admin-theme { border-left-color: var(--primary-blue); }
+        .welcome-section h3 { font-size: 20px; color: #111; }
+        .welcome-section p { font-size: 13px; color: #666; margin-top: 3px; }
+        .role-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-top: 8px; text-transform: uppercase; }
+        
+        /* ==================== 2. USER DASHBOARD (10 MODULES) ==================== */
+        .modules-title { padding: 0 15px; margin-top: 10px; font-size: 14px; font-weight: 700; color: #555; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .modules-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        
+        .module-card { background: white; border-radius: 12px; padding: 20px 15px; text-align: center; box-shadow: var(--card-shadow); border: 1px solid #eaeeed; cursor: pointer; transition: 0.2s; position: relative; }
+        .module-card:active { transform: scale(0.96); }
+        .module-number { position: absolute; top: 8px; left: 12px; font-size: 12px; font-weight: 700; color: #28a745; }
+        .module-card i { font-size: 30px; margin-bottom: 10px; display: block; }
+        .module-card span { font-size: 13px; font-weight: 600; color: #333; display: block; }
+
+        /* Module Colors */
+        .mod-1 i, .mod-1 .module-number { color: #28a745; }
+        .mod-2 i, .mod-2 .module-number { color: #dc3545; }
+        .mod-3 i, .mod-3 .module-number { color: #0d6efd; }
+        .mod-4 i, .mod-4 .module-number { color: #fd7e14; }
+        .mod-5 i, .mod-5 .module-number { color: #17a2b8; }
+        .mod-6 i, .mod-6 .module-number { color: #ffc107; }
+        .mod-7 i, .mod-7 .module-number { color: #6f42c1; }
+        .mod-8 i, .mod-8 .module-number { color: #e83e8c; }
+        .mod-9 i, .mod-9 .module-number { color: #20c997; }
+        .mod-10 i, .mod-10 .module-number { color: #212529; }
+
+        /* ==================== 3. MONTHLY HISTORY DIRECTORY ==================== */
+        .directory-box { background: white; margin: 15px; padding: 15px; border-radius: 12px; box-shadow: var(--card-shadow); }
+        .directory-box h4 { font-size: 14px; margin-bottom: 10px; color: #444; display: flex; align-items: center; gap: 6px; }
+        .dir-select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: #f9f9f9; font-weight: 600; outline: none; }
+        .logs-window { margin-top: 10px; background: #fafafa; border: 1px dashed #ccc; border-radius: 8px; max-height: 180px; overflow-y: auto; font-size: 13px; }
+        .log-row { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .log-row:last-child { border-bottom: none; }
+
+        /* ==================== 4. FORMS SCREEN ==================== */
+        .form-nav-bar { background: #157347; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; }
+        .form-nav-bar i { cursor: pointer; font-size: 18px; }
+        .form-container { background: white; margin: 15px; padding: 20px; border-radius: 12px; box-shadow: var(--card-shadow); }
+        .form-field { margin-bottom: 15px; }
+        .form-field label { display: block; font-size: 12px; font-weight: 600; color: #666; margin-bottom: 5px; text-transform: uppercase; }
+        .form-field input, .form-field select, .form-field textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: #f9fafb; }
+        .form-field input[readonly] { background: #e9ecef; color: #495057; font-weight: 600; }
+        .submit-form-btn { width: 100%; padding: 12px; background: #157347; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 15px; cursor: pointer; }
+
+        /* ==================== 5. ADMIN DASHBOARD ==================== */
+        .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
+        .stat-card { background: white; padding: 15px; border-radius: 12px; box-shadow: var(--card-shadow); border-top: 4px solid var(--primary-blue); }
+        .stat-card.red-top { border-top-color: #dc3545; }
+        .stat-card.green-top { border-top-color: #28a745; }
+        .stat-card p { font-size: 12px; color: #666; font-weight: 600; }
+        .stat-card h3 { font-size: 24px; color: #111; margin-top: 5px; }
+
+        .admin-controls { background: white; margin: 15px; padding: 15px; border-radius: 12px; box-shadow: var(--card-shadow); }
+        .admin-controls h4 { font-size: 14px; margin-bottom: 10px; color: #333; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        .data-table th, .data-table td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        .data-table th { background: #f8f9fa; color: #555; font-weight: 600; }
+
+        /* Bottom Fixed Navigation Bar */
+        .bottom-nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .nav-link { text-align: center; color: #777; font-size: 11px; cursor: pointer; text-decoration: none; }
+        .nav-link i { font-size: 20px; display: block; margin-bottom: 2px; }
+        .nav-link.active { color: var(--primary-green); }
+        .nav-link.admin-active { color: var(--primary-blue); }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== 1. LOGIN SCREEN ==================== -->
+    <div id="loginScreen" class="screen login-screen active">
+        <div class="login-container">
+            <div class="logo-area">
+                <i class="fa-solid fa-helmet-safety" style="font-size: 50px; color: var(--primary-green);" id="logoIcon"></i>
+                <h1 id="logoText">HSE REPORT</h1>
+                <p>Health • Safety • Environment</p>
+            </div>
+
+            <div class="tab-container">
+                <button id="userTab" class="tab-btn active" onclick="switchLoginTab('user')">User Login</button>
+                <button id="adminTab" class="tab-btn" onclick="switchLoginTab('admin')">Admin Login</button>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <!-- Dynamic Admin Selection Dropdown -->
+                <div class="input-group" id="adminSelectGroup" style="display: none;">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <select id="adminUser">
+                        <option value="admin02">Murti Sir (Admin)</option>
+                        <option value="super01">Rajesh Sir (Super Admin)</option>
+                    </select>
+                </div>
+
+                <!-- User ID Field -->
+                <div class="input-group" id="userIdGroup">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="loginId" placeholder="Enter User ID" required>
+                </div>
+
+                <!-- Password Field -->
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="loginPassword" placeholder="Enter Password" required>
+                </div>
+
+                <button type="submit" id="loginSubmitBtn" class="login-btn user-theme">Login</button>
+            </form>
+        </div>
     </div>
 
-    <!-- यह लाइन जावास्क्रिप्ट को इस पेज से जोड़ती है -->
-    <script src="script.js"></script>
+
+    <!-- ==================== 2. USER DASHBOARD SCREEN ==================== -->
+    <div id="userDashboardScreen" class="screen">
+        <div class="app-header">
+            <h2><i class="fa-solid fa-helmet-safety"></i> PHL HSE REPORT</h2>
+            <div class="profile-trigger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></div>
+        </div>
+
+        <div class="welcome-section" id="userWelcomeCard">
+            <h3>Welcome, Vishal Kumar</h3>
+            <p>Designation: HSE Officer</p>
+            <span class="role-tag" style="background: #eef2f1; color: var(--primary-green);">Employee ID: 0301</span>
+        </div>
+
+        <!-- Monthly Folder Directory Section -->
+        <div class="directory-box">
+            <h4><i class="fa-solid fa-folder-open" style="color: #ffc107;"></i> Monthly Reports Directory</h4>
+            <select id="userMonthSelect" class="dir-select" onchange="renderDirectoryLogs('user')">
+                <option value="2026-07">📂 July 2026 Records</option>
+                <option value="2026-08">📂 August 2026 Records</option>
+                <option value="2026-09">📂 September 2026 Records</option>
+            </select>
+            <div class="logs-window" id="userLogsWindow">
+                <!-- Recorded logs load dynamically here -->
+            </div>
+        </div>
+
+        <div class="modules-title">User Dashboard (10 Modules)</div>
+        
+        <div class="modules-grid">
+            <div class="module-card mod-1" onclick="openFormScreen('Present')">
+                <span class="module-number">01</span><i class="fa-solid fa-circle-check"></i><span>Present</span>
+            </div>
+            <div class="module-card mod-2" onclick="openFormScreen('Absent')">
+                <span class="module-number">02</span><i class="fa-solid fa-circle-xmark"></i><span>Absent</span>
+            </div>
+            <div class="module-card mod-3" onclick="openFormScreen('TBT Report')">
+                <span class="module-number">03</span><i class="fa-solid fa-file-invoice"></i><span>TBT Report / PWT</span>
+            </div>
+            <div class="module-card mod-4" onclick="openFormScreen('Mock Drill')">
+                <span class="module-number">04</span><i class="fa-solid fa-fire-extinguisher"></i><span>Mock Drill Report</span>
+            </div>
+            <div class="module-card mod-5" onclick="openFormScreen('Inspection')">
+                <span class="module-number">05</span><i class="fa-solid fa-magnifying-glass"></i><span>Inspection</span>
+            </div>
+            <div class="module-card mod-6" onclick="openFormScreen('Observation')">
+                <span class="module-number">06</span><i class="fa-solid fa-triangle-exclamation"></i><span>Observation</span>
+            </div>
+            <div class="module-card mod-7" onclick="openFormScreen('Monthly Plan')">
+                <span class="module-number">07</span><i class="fa-solid fa-calendar-days"></i><span>Monthly Plan</span>
+            </div>
+            <div class="module-card mod-8" onclick="openFormScreen('Complaint')">
+                <span class="module-number">08</span><i class="fa-solid fa-comments"></i><span>Complaint</span>
+            </div>
+            <div class="module-card mod-9" onclick="openFormScreen('Notice Info')">
+                <span class="module-number">09</span><i class="fa-solid fa-bullhorn"></i><span>Notice & Info</span>
+            </div>
+            <div class="module-card mod-10" onclick="openFormScreen('Finance')">
+                <span class="module-number">10</span><i class="fa-solid fa-indian-rupee-sign"></i><span>Finance</span>
+            </div>
+        </div>
+
+        <div class="bottom-nav-bar">
+            <div class="nav-link active"><i class="fa-solid fa-house"></i>Dashboard</div>
+            <div class="nav-link" onclick="logout()"><i class="fa-solid fa-sign-out"></i>Logout</div>
+        </div>
+    </div>
+
+
+    <!-- ==================== 3. DYNAMIC FORM SUBMISSION SCREEN ==================== -->
+    <div id="formScreen" class="screen">
+        <div class="form-nav-bar" id="formHeaderBar">
+            <i class="fa-solid fa-arrow-left" onclick="backToDashboard()"></i>
+            <h3 id="formTitle">Dynamic Form</h3>
+        </div>
+
+        <div class="form-container">
+            <form id="hseDynamicForm" onsubmit="submitHseForm(event)">
+                <div class="form-field">
+                    <label>Date</label>
+                    <input type="text" id="formDate" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Time</label>
+                    <input type="text" id="formTime" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Location</label>
+                    <select id="formLocation">
+                        <option value="Plant Site 1">Plant Site 1</option>
+                        <option value="Plant Site 2">Plant Site 2</option>
+                        <option value="Workshop Area">Workshop Area</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Department</label>
+                    <input type="text" id="formDept" value="HSE Department" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Employee ID</label>
+                    <input type="text" id="formEmpId" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Employee Name</label>
+                    <input type="text" id="formEmpName" readonly>
+                </div>
+                <div class="form-field" id="detailsFieldBox">
+                    <label>Description / Work Details</label>
+                    <textarea id="formDetails" rows="3" placeholder="Enter work descriptions..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-form-btn" id="formSubmitBtn">Submit Report</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ==================== 4. ADMIN / SUPER ADMIN SCREEN ==================== -->
+    <div id="adminDashboardScreen" class="screen">
+        <div class="app-header admin-theme">
+            <h2 id="adminNavTitle"><i class="fa-solid fa-user-shield"></i> Admin Dashboard</h2>
+            <div class="profile-trigger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></div>
+        </div>
+
+        <div class="welcome-section admin-theme" id="adminWelcomeCard">
+            <h3>Hello, Admin</h3>
+            <p>HSE Monitoring Dashboard</p>
+            <span class="role-tag" id="adminRoleTag" style="background: #eef2f6; color: var(--primary-blue);">Admin</span>
+        </div>
+
+        <!-- Admin Stats Counter Grid (Matching Top Row of your UI Image) -->
+        <div class="stat-grid">
+            <div class="stat-card green-top">
+                <p>Total Users</p>
+                <h3>1</h3>
+            </div>
+            <div class="stat-card blue-top">
+                <p>Present Today</p>
+                <h3 id="statPresentCount">0</h3>
+            </div>
+            <div class="stat-card">
+                <p>Reports Filed</p>
+                <h3 id="statReportsCount">0</h3>
+            </div>
+            <div class="stat-card red-top">
+                <p>Absent Today</p>
+                <h3 id="statAbsentCount">0</h3>
+            </div>
+        </div>
+
+        <!-- Admin Directory Search Scope -->
+        <div class="admin-controls">
+            <h4><i class="fa-solid fa-folder-tree"></i> Audit Employee Logs by Month</h4>
+            <div class="input-group" style="margin-bottom: 10px;">
+                <select id="adminMonthSelect" class="dir-select" onchange="renderDirectoryLogs('admin')" style="padding-left: 10px;">
+                    <option value="2026-07">📂 July 2026 Directory</option>
+                    <option value="2026-08">📂 August 2026 Directory</option>
+                    <option value="2026-09">📂 September 2026 Directory</option>
+                </select>
+            </div>
+
+            <!-- Management Master Table View -->
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>User ID</th>
+                        <th>Date & Time</th>
+                        <th>Status / Remarks</th>
+                    </tr>
+                </thead>
+                <tbody id="adminLogsTableBody">
+                    <!-- Loaded dynamically via LocalStorage states -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bottom-nav-bar">
+            <div class="nav-link admin-active"><i class="fa-solid fa-chart-pie"></i>Overview</div>
+            <div class="nav-link" onclick="logout()"><i class="fa-solid fa-sign-out"></i>Logout</div>
+        </div>
+    </div>
+
+    <!-- ==================== LOGIC ENGINE JS ==================== -->
+    <script>
+        let currentLoginRole = 'user'; // default state scope
+        let authenticatedUser = null;
+
+        // Multi-tab Login Selector
+        function switchLoginTab(role) {
+            currentLoginRole = role;
+            document.getElementById('userTab').classList.toggle('active', role === 'user');
+            document.getElementById('adminTab').classList.toggle('active', role === 'admin');
+            
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            const logoIcon = document.getElementById('logoIcon');
+            
+            if (role === 'admin') {
+                document.getElementById('adminSelectGroup').style.display = 'block';
+                document.getElementById('userIdGroup').style.display = 'none';
+                submitBtn.className = "login-btn admin-theme";
+                logoIcon.style.color = "var(--primary-blue)";
+                document.getElementById('loginId').removeAttribute('required');
+            } else {
+                document.getElementById('adminSelectGroup').style.display = 'none';
+                document.getElementById('userIdGroup').style.display = 'block';
+                submitBtn.className = "login-btn user-theme";
+                logoIcon.style.color = "var(--primary-green)";
+                document.getElementById('loginId').setAttribute('required', 'true');
+            }
+        }
+
+        // Custom Login Routing Engine
+        function handleLogin(event) {
+            event.preventDefault();
+            const passwordInput = document.getElementById('loginPassword').value.trim();
+
+            if (currentLoginRole === 'admin') {
+                const selectedAdmin = document.getElementById('adminUser').value;
+                if (selectedAdmin === 'admin02' && passwordInput === 'Murti') {
+                    authenticatedUser = { id: 'admin02', name: 'Murti Sir', role: 'admin' };
+                    alert("Admin Login Successful!");
+                    navigateTo('adminDashboardScreen');
+                } else if (selectedAdmin === 'super01' && passwordInput === 'Rajesh') {
+                    authenticatedUser = { id: 'super01', name: 'Rajesh Sir', role: 'superadmin' };
+                    alert("Super Admin Login Successful!");
+                    navigateTo('adminDashboardScreen');
+                } else {
+                    alert("Invalid Password for Selected Administrator Profile!");
+                }
+            } else {
+                const userIdInput = document.getElementById('loginId').value.trim();
+                if (userIdInput === '0301' && passwordInput === 'Vishal') {
+                    authenticatedUser = { id: '0301', name: 'Vishal Kumar', role: 'user' };
+                    alert("Employee Login Successful!");
+                    navigateTo('userDashboardScreen');
+                } else {
+                    alert("Invalid Employee ID or Password!");
+                }
+            }
+        }
+
+        // SPA Screen Navigation Switch
+        function navigateTo(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const activeScreen = document.getElementById(screenId);
+            activeScreen.classList.add('active');
+
+            // Dynamic view re-renderings based on target destination state
+            if (screenId === 'userDashboardScreen') {
+                renderDirectoryLogs('user');
+            } else if (screenId === 'adminDashboardScreen') {
+                configureAdminDashboardView();
+                renderDirectoryLogs('admin');
+            }
+        }
+
+        // Dynamic Form Initializer matching target module layout
+        let activeModuleContext = "";
+        function openFormScreen(moduleName) {
+            activeModuleContext = moduleName;
+            navigateTo('formScreen');
+            
+            document.getElementById('formTitle').innerText = "Submit: " + moduleName;
+            document.getElementById('formEmpId').value = authenticatedUser.id;
+            document.getElementById('formEmpName').value = authenticatedUser.name;
+
+            // Compute Clock State instantly
+            const today = new Date();
+            document.getElementById('formDate').value = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('formTime').value = today.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) + " (Auto)";
+
+            // Adapt structural theme elements based on actions inside UI
+            const headerBar = document.getElementById('formHeaderBar');
+            const submitBtn = document.getElementById('formSubmitBtn');
+            const descBox = document.getElementById('detailsFieldBox');
+
+            if (moduleName === 'Present' || moduleName === 'Absent') {
+                descBox.style.display = 'none';
+                headerBar.style.background = moduleName === 'Present' ? '#10b981' : '#dc3545';
+                submitBtn.style.background = moduleName === 'Present' ? '#10b981' : '#dc3545';
+                submitBtn.innerText = moduleName === 'Present' ? "Confirm Punch-In (Present)" : "Confirm Status (Absent)";
+            } else {
+                descBox.style.display = 'block';
+                headerBar.style.background = 'var(--primary-green)';
+                submitBtn.style.background = 'var(--primary-green)';
+                submitBtn.innerText = "Submit " + moduleName + " Data";
+            }
+        }
+
+        function backToDashboard() {
+            navigateTo('userDashboardScreen');
+        }
+
+        // Commit Form Submission Logs straight inside Month Directories
+        function submitHseForm(event) {
+            event.preventDefault();
+            const dateVal = document.getElementById('formDate').value;
+            const timeVal = document.getElementById('formTime').value;
+            const locationVal = document.getElementById('formLocation').value;
+            const descVal = document.getElementById('formDetails').value;
+            
+            const today = new Date();
+            const monthKey = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0');
+
+            const logEntry = {
+                module: activeModuleContext,
+                userId: authenticatedUser.id,
+                userName: authenticatedUser.name,
+                dateTime: dateVal + " | " + timeVal,
+                location: locationVal,
+                remarks: (activeModuleContext === 'Present' || activeModuleContext === 'Absent') ? activeModuleContext.toUpperCase() : descVal
+            };
+
+            // Retrieve directory log context, safely push record state, save arrays
+            let globalLogs = JSON.parse(localStorage.getItem("phl_master_logs_" + monthKey)) || [];
+            globalLogs.push(logEntry);
+            localStorage.setItem("phl_master_logs_" + monthKey, JSON.stringify(globalLogs));
+
+            alert(`${activeModuleContext} data logged seamlessly inside current month folder!`);
+            navigateTo('userDashboardScreen');
+        }
+
+        // Render Directory Folders across views dynamically
+        function renderDirectoryLogs(viewScope) {
+            const selectId = viewScope === 'user' ? 'userMonthSelect' : 'adminMonthSelect';
+            const selectedMonth = document.getElementById(selectId).value;
+            const logs = JSON.parse(localStorage.getItem("phl_master_logs_" + selectedMonth)) || [];
+
+            if (viewScope === 'user') {
+                const logWindow = document.getElementById('userLogsWindow');
+                // Filter down context to the specific user session scope alone
+                const userFilteredLogs = logs.filter(l => l.userId === authenticatedUser.id);
+                
+                if (userFilteredLogs.length === 0) {
+                    logWindow.innerHTML = `<div style="padding:15px; text-align:center; color:#888;">No records inside this folder directory.</div>`;
+                    return;
+                }
+                logWindow.innerHTML = userFilteredLogs.map(l => `
+                    <div class="log-row">
+                        <span><b>${l.module}</b> (${l.location})</span>
+                        <span style="color:#666;">${l.dateTime}</span>
+                    </div>
+                `).join('');
+            } else {
+                // Admin Oversight Master Logic Rendering Panel Logs
+                const tableBody = document.getElementById('adminLogsTableBody');
+                if (logs.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#888;">No employee activities recorded inside this folder.</td></tr>`;
+                    return;
+                }
+                tableBody.innerHTML = logs.map(l => `
+                    <tr>
+                        <td><b>${l.module}</b></td>
+                        <td>${l.userId} (${l.userName})</td>
+                        <td>${l.dateTime}</td>
+                        <td><span style="color: ${l.remarks === 'PRESENT' ? 'green' : (l.remarks === 'ABSENT' ? 'red' : '#333')}; font-weight:600;">${l.remarks}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Layout UI customizations for Administration Profiles
+        function configureAdminDashboardView() {
+            const welcomeCard = document.getElementById('adminWelcomeCard');
+            const navTitle = document.getElementById('adminNavTitle');
+            const tag = document.getElementById('adminRoleTag');
+
+            if (authenticatedUser.role === 'superadmin') {
+                navTitle.innerText = "PHL SUPER ADMIN INTERFACE";
+                welcomeCard.style.background = "#212529";
+                welcomeCard.style.color = "white";
+                tag.innerText = "SUPER ADMIN (FULL CONTROL OVERLAY)";
+                tag.style.background = "#dc3545";
+                tag.style.color = "white";
+            } else {
+                navTitle.innerText = "PHL MANAGEMENT CONSOLE";
+                welcomeCard.style.background = "white";
+                welcomeCard.style.color = "#333";
+                tag.innerText = "ADMIN AUDITOR ROLE";
+                tag.style.background = "#eef2f6";
+                tag.style.color = "var(--primary-blue)";
+            }
+
+            // Calculate live status widgets stats counters logic instantly
+            const today = new Date();
+            const monthKey = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0');
+            const logs = JSON.parse(localStorage.getItem("phl_master_logs_" + monthKey)) || [];
+
+            let presentCount = logs.filter(l => l.module === 'Present').length;
+            let absentCount = logs.filter(l => l.module === 'Absent').length;
+            
+            document.getElementById('statReportsCount').innerText = logs.length;
+            document.getElementById('statPresentCount').innerText = presentCount;
+            document.getElementById('statAbsentCount').innerText = absentCount;
+        }
+
+        // Flush credentials and session routing back to start
+        function logout() {
+            authenticatedUser = null;
+            document.getElementById('loginForm').reset();
+            navigateTo('loginScreen');
+            alert("Signed out securely.");
+        }
+    </script>
 </body>
 </html>
-
