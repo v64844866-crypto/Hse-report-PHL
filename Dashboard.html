@@ -18,6 +18,14 @@
         .badge-admin { background: #fd7e14; color: white; }
         .badge-super { background: #dc3545; color: white; }
         
+        /* Monthly Folders Section */
+        .folder-section { background: white; margin: 20px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .folder-section h3 { color: #157347; margin-bottom: 15px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .month-select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; margin-bottom: 15px; background: #f8f9fa; font-weight: bold; }
+        .log-container { background: #fafafa; border: 1px dashed #ccc; border-radius: 6px; padding: 10px; max-height: 200px; overflow-y: auto; font-size: 13px; }
+        .log-item { padding: 8px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        .log-item:last-child { border-bottom: none; }
+
         /* Admin View Section */
         .admin-section { background: white; margin: 20px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; }
         .admin-section h3 { color: #333; margin-bottom: 15px; font-size: 16px; border-bottom: 2px solid #eef2f1; padding-bottom: 5px; }
@@ -41,7 +49,7 @@
         .icon-obs { color: #fd7e14; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #ddd; }
-        .nav-item { text-align: center; color: #666; font-size: 12px; text-decoration: none; }
+        .nav-item { text-align: center; color: #666; font-size: 12px; text-decoration: none; cursor: pointer; }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
         .nav-item.active { color: #157347; }
     </style>
@@ -56,6 +64,18 @@
     <div class="welcome-card">
         <h2 id="welcomeName">Loading Profile...</h2>
         <div id="roleTag"></div>
+    </div>
+
+    <div class="folder-section">
+        <h3><i class="fa-solid fa-folder-open"></i> Monthly Attendance Folder</h3>
+        <select id="monthFolderSelect" class="month-select" onchange="loadMonthlyRecords()">
+            <option value="2026-07">📂 July 2026 Reports</option>
+            <option value="2026-08">📂 August 2026 Reports</option>
+            <option value="2026-09">📂 September 2026 Reports</option>
+        </select>
+        <div id="monthlyLogs" class="log-container">
+            Select a month folder to view recorded logs with Date & Time.
+        </div>
     </div>
 
     <div id="adminPanel" class="admin-section">
@@ -73,7 +93,7 @@
                     <th>Employee ID</th>
                     <th>Name</th>
                     <th>Status</th>
-                    <th>Time</th>
+                    <th>Time & Date</th>
                 </tr>
             </thead>
             <tbody id="attendanceRecords">
@@ -110,14 +130,13 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         let role = urlParams.get('role');
-        let empId = urlParams.get('id') || "0301"; // डिफ़ॉल्ट विशाल
+        let empId = urlParams.get('id') || "0301";
 
         const welcomeName = document.getElementById('welcomeName');
         const roleTag = document.getElementById('roleTag');
         const navTitle = document.getElementById('navTitle');
         const adminPanel = document.getElementById('adminPanel');
 
-        // यूज़र डेटा रेंडरिंग लॉजिक
         if (role === 'superadmin') {
             navTitle.innerText = "PHL HSE - SUPER ADMIN";
             welcomeName.innerText = "Welcome, Rajesh";
@@ -138,60 +157,104 @@
             roleTag.innerHTML = "<span class='role-badge badge-user'>Employee ID: " + empId + "</span>";
         }
 
-        // Punch In Logic
+        // Initialize / Load Default Monthly Logs
+        loadMonthlyRecords();
+
         function triggerPunchIn() {
             if (role === 'admin' || role === 'superadmin') {
-                alert("Admins cannot punch in attendance for themselves.");
+                alert("Admins cannot punch in attendance.");
                 return;
             }
-            const timeNow = new Date().toLocaleTimeString();
-            localStorage.setItem("attendance_" + empId, JSON.stringify({ status: "🔴 PRESENT (PUNCHED IN)", time: timeNow }));
-            alert("Punch-In successful at " + timeNow);
+            const now = new Date();
+            const dateStr = now.toLocaleDateString();
+            const timeStr = now.toLocaleTimeString();
+            const currentMonthKey = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
+
+            // Save log to local storage array for folder view
+            let monthlyLogs = JSON.parse(localStorage.getItem("logs_" + currentMonthKey)) || [];
+            monthlyLogs.push({ type: "🟢 Present (Punch-In)", date: dateStr, time: timeStr });
+            localStorage.setItem("logs_" + currentMonthKey, JSON.stringify(monthlyLogs));
+
+            // Save current status for admin live view
+            localStorage.setItem("attendance_" + empId, JSON.stringify({ status: "🔴 PRESENT", datetime: dateStr + " " + timeStr }));
+            
+            alert("Punch-In successful at " + timeStr + " on " + dateStr);
+            loadMonthlyRecords();
+            loadAttendanceLogs();
         }
 
-        // Absent Logic
         function triggerAbsent() {
             if (role === 'admin' || role === 'superadmin') {
-                alert("Admins cannot mark attendance logs here.");
+                alert("Admins cannot mark absent log.");
                 return;
             }
             let confirmAbsent = confirm("Are you sure you want to mark ABSENT (Yes)?");
             if (confirmAbsent) {
-                const timeNow = new Date().toLocaleTimeString();
-                localStorage.setItem("attendance_" + empId, JSON.stringify({ status: "❌ ABSENT", time: timeNow }));
+                const now = new Date();
+                const dateStr = now.toLocaleDateString();
+                const timeStr = now.toLocaleTimeString();
+                const currentMonthKey = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
+
+                let monthlyLogs = JSON.parse(localStorage.getItem("logs_" + currentMonthKey)) || [];
+                monthlyLogs.push({ type: "❌ Absent (Marked)", date: dateStr, time: timeStr });
+                localStorage.setItem("logs_" + currentMonthKey, JSON.stringify(monthlyLogs));
+
+                localStorage.setItem("attendance_" + empId, JSON.stringify({ status: "❌ ABSENT", datetime: dateStr + " " + timeStr }));
+                
                 alert("Marked Absent successfully.");
+                loadMonthlyRecords();
+                loadAttendanceLogs();
             }
         }
 
-        // Forms redirection placeholder
+        // Monthly Records Folder View Logic
+        function loadMonthlyRecords() {
+            const selectedMonth = document.getElementById('monthFolderSelect').value;
+            const logContainer = document.getElementById('monthlyLogs');
+            const logs = JSON.parse(localStorage.getItem("logs_" + selectedMonth)) || [];
+
+            if (logs.length === 0) {
+                logContainer.innerHTML = "<span style='color: #888;'>No records found inside this month folder.</span>";
+                return;
+            }
+
+            logContainer.innerHTML = logs.map(log => `
+                <div class="log-item">
+                    <strong>${log.type}</strong>
+                    <span style="color:#666;">${log.date} | ${log.time}</span>
+                </div>
+            `).join('');
+        }
+
         function openForm(formName) {
             alert("Opening dynamic link file for: " + formName);
         }
 
-        // Admin functionality: View other employee dashboards
         function switchEmployeeView() {
             const selectedUser = document.getElementById('employeeSelect').value;
             if(selectedUser) {
-                alert("Opening Dashboard View for Employee: " + selectedUser);
+                alert("Opening Admin Dashboard View for Employee ID: " + selectedUser);
                 window.location.href = "dashboard.html?role=user&id=" + selectedUser;
             }
         }
 
-        // Admin functionality: Load live logs
         function loadAttendanceLogs() {
-            const recordsBody = document.getElementById('attendanceRecords');
-            const logData = JSON.parse(localStorage.getItem("attendance_0301")) || { status: "No Data", time: "--:--" };
-            
-            recordsBody.innerHTML = `
-                <tr>
-                    <td>0301</td>
-                    <td>Vishal</td>
-                    <td style="font-weight:bold; color: ${logData.status.includes('PRESENT') ? 'green' : 'red'}">${logData.status}</td>
-                    <td>${logData.time}</td>
-                </tr>
-            `;
+            if (role === 'admin' || role === 'superadmin') {
+                const recordsBody = document.getElementById('attendanceRecords');
+                const logData = JSON.parse(localStorage.getItem("attendance_0301")) || { status: "No Data", datetime: "--/--/---- --:--" };
+                
+                recordsBody.innerHTML = `
+                    <tr>
+                        <td>0301</td>
+                        <td>Vishal</td>
+                        <td style="font-weight:bold; color: ${logData.status.includes('PRESENT') ? 'green' : 'red'}">${logData.status}</td>
+                        <td>${logData.datetime}</td>
+                    </tr>
+                `;
+            }
         }
     </script>
 </body>
 </html>
+
 
