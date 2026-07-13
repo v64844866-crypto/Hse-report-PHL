@@ -52,11 +52,11 @@
         .modules-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 16px; }
         .mod-card { background: white; border-radius: 16px; padding: 20px 12px; text-align: center; box-shadow: var(--card-shadow); border: 1px solid #f1f5f9; cursor: pointer; position: relative; transition: transform 0.2s; }
         .mod-card:active { transform: scale(0.96); }
+        .mod-card.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; background: #e2e8f0; }
         .mod-badge { position: absolute; top: 8px; left: 12px; background: #f1f5f9; color: #64748b; font-size: 10px; font-weight: 700; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .mod-card i { font-size: 28px; margin-bottom: 10px; display: block; }
         .mod-card span { font-size: 13px; font-weight: 600; color: #334155; display: block; }
         
-        /* Module color palettes matching exactly your image template */
         .c1 i { color: #10b981; } .c2 i { color: #ef4444; } .c3 i { color: #3b82f6; } .c4 i { color: #f59e0b; } .c5 i { color: #06b6d4; } 
         .c6 i { color: #f97316; } .c7 i { color: #6366f1; } .c8 i { color: #ec4899; } .c9 i { color: #14b8a6; } .c10 i { color: #8b5cf6; }
 
@@ -70,7 +70,7 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; background-color: #f8fafc; outline: none; color: #1e293b; }
         .form-group input[readonly] { background-color: #edf2f7; color: #64748b; }
         
-        /* --- MULTIPLE PHOTO UPLOAD CONTAINER WITH '+' BUTTON --- */
+        /* --- MULTIPLE PHOTO UPLOAD CONTAINER --- */
         .photo-grid-box { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 8px; }
         .photo-preview-item { width: 100%; aspect-ratio: 1/1; border-radius: 10px; object-fit: cover; border: 1px solid #cbd5e1; }
         .add-photo-btn { width: 100%; aspect-ratio: 1/1; border: 2px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px; color: #64748b; }
@@ -78,9 +78,9 @@
         .submit-btn { width: 100%; padding: 14px; border: none; border-radius: 10px; color: white; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-top: 10px; }
 
         /* --- LOGS AND RECEIPTS --- */
-        .filter-box { background: white; margin: 16px; padding: 14px; border-radius: 12px; box-shadow: var(--card-shadow); }
-        .filter-box select { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 600; background: #f8fafc; }
-        .data-receipt-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: var(--card-shadow); border-left: 5px solid var(--phl-green); }
+        .filter-box { background: white; margin: 16px; padding: 14px; border-radius: 12px; box-shadow: var(--card-shadow); display: flex; gap: 10px; }
+        .filter-box select { flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 600; background: #f8fafc; }
+        .data-receipt-card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: var(--card-shadow); border-left: 5px solid var(--phl-green); position: relative; }
         .receipt-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px; }
         .receipt-title-row h4 { font-size: 14px; font-weight: 700; }
         .receipt-time { font-size: 11px; color: #64748b; font-weight: 500; }
@@ -89,6 +89,7 @@
         .receipt-row span:last-child { color: var(--text-dark); font-weight: 600; }
         .receipt-gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
         .receipt-gallery img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .reset-attendance-btn { background: #ef4444; color: white; border: none; padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 8px; display: inline-block; }
 
         /* --- FOOTER NAVBAR --- */
         .bottom-navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #edf2f7; box-shadow: 0 -4px 12px rgba(0,0,0,0.03); z-index: 100; }
@@ -100,6 +101,7 @@
 </head>
 <body>
 
+    <!-- ================= SCREEN: LOGIN SECURITY ================= -->
     <div id="loginScreen" class="app-screen active">
         <div class="login-screen">
             <div class="login-card">
@@ -113,6 +115,7 @@
         </div>
     </div>
 
+    <!-- ================= SCREEN: USER & ADMIN DASHBOARDS ================= -->
     <div id="dashboardScreen" class="app-screen">
         <div class="top-navbar">
             <h2 id="navRoleTitle"><i class="fa-solid fa-helmet-safety"></i> PHL PORTAL</h2>
@@ -127,30 +130,16 @@
 
         <div id="adminStatsContainer" style="display: none; margin-bottom: 10px;">
             <div class="stat-grid">
-                <div class="stat-box">
-                    <p>Total Users</p>
-                    <h3 id="statTotalUsers">4</h3>
-                </div>
-                <div class="stat-box red-border">
-                    <p>Today Absent</p>
-                    <h3>0</h3>
-                </div>
-                <div class="stat-box orange-border">
-                    <p>Pending Review</p>
-                    <h3>0</h3>
-                </div>
-                <div class="stat-box blue-border">
-                    <p>Reports Logged</p>
-                    <h3 id="statTotalReports">0</h3>
-                </div>
+                <div class="stat-box"><p>Total Users</p><h3 id="statTotalUsers">0</h3></div>
+                <div class="stat-box red-border"><p>Total Logs</p><h3 id="statTotalReports">0</h3></div>
             </div>
         </div>
 
         <div class="section-header">HSE active modules</div>
         
         <div class="modules-container">
-            <div class="mod-card c1" onclick="initiateFormRoute('Present')"><span class="mod-badge">1</span><i class="fa-solid fa-circle-check"></i><span>Present</span></div>
-            <div class="mod-card c2" onclick="initiateFormRoute('Absent')"><span class="mod-badge">2</span><i class="fa-solid fa-circle-xmark"></i><span>Absent</span></div>
+            <div id="mod-Present" class="mod-card c1" onclick="initiateFormRoute('Present')"><span class="mod-badge">1</span><i class="fa-solid fa-circle-check"></i><span>Present</span></div>
+            <div id="mod-Absent" class="mod-card c2" onclick="initiateFormRoute('Absent')"><span class="mod-badge">2</span><i class="fa-solid fa-circle-xmark"></i><span>Absent</span></div>
             <div class="mod-card c3" onclick="initiateFormRoute('TBT Report')"><span class="mod-badge">3</span><i class="fa-solid fa-file-contract"></i><span>TBT / PWT</span></div>
             <div class="mod-card c4" onclick="initiateFormRoute('Mock Drill')"><span class="mod-badge">4</span><i class="fa-solid fa-fire-extinguisher"></i><span>Mock Drill</span></div>
             <div class="mod-card c5" onclick="initiateFormRoute('Inspection')"><span class="mod-badge">5</span><i class="fa-solid fa-magnifying-glass"></i><span>Inspection</span></div>
@@ -162,80 +151,68 @@
         </div>
     </div>
 
+    <!-- ================= SCREEN: FORM VIEW ================= -->
     <div id="formScreen" class="app-screen">
         <div id="dynamicFormHeader" class="dynamic-header-bar">
             <i class="fa-solid fa-arrow-left" onclick="navigateBackToDashboard()"></i>
             <span id="formHeaderLabel">Module Form</span>
         </div>
-
         <div class="form-body">
             <form id="hseMasterInputForm" onsubmit="processFormSave(event)">
                 <div class="form-group"><label>Date</label><input type="text" id="fDate" readonly></div>
                 <div class="form-group"><label>Time</label><input type="text" id="fTime" readonly></div>
-                
-                <div class="form-group">
-                    <label>Location</label>
-                    <select id="fLocation">
-                        <option value="Towergira Site">Towergira Site</option>
-                    </select>
-                </div>
-                
+                <div class="form-group"><label>Location</label><select id="fLocation"><option value="Towergira Site">Towergira Site</option></select></div>
                 <div class="form-group"><label>Employee ID</label><input type="text" id="fEmpId" readonly></div>
                 <div class="form-group"><label>Employee Name</label><input type="text" id="fEmpName" readonly></div>
-                <div class="form-group" id="remarksFieldBlock"><label>Description / Work Details</label><textarea id="fRemarks" rows="3" placeholder="Enter status or findings..."></textarea></div>
+                <div class="form-group" id="remarksFieldBlock"><label>Description / Work Details</label><textarea id="fRemarks" rows="3"></textarea></div>
                 
                 <div class="form-group">
                     <label>Upload Photos</label>
                     <div class="photo-grid-box">
                         <div id="uploadedPhotosGrid" style="display: contents;"></div>
-                        <div class="add-photo-btn" onclick="document.getElementById('multiImageSystemInput').click()">
-                            <i class="fa-solid fa-plus"></i>
-                        </div>
+                        <div class="add-photo-btn" onclick="document.getElementById('multiImageSystemInput').click()"><i class="fa-solid fa-plus"></i></div>
                     </div>
                     <input type="file" id="multiImageSystemInput" accept="image/*" style="display: none;" onchange="handleIncomingPhotoCompression()">
                 </div>
-
                 <button type="submit" id="formSubmitBtn" class="submit-btn">Submit Report</button>
             </form>
         </div>
     </div>
 
+    <!-- ================= SCREEN: ADMIN GENERATE EMPLOYEE ================= -->
     <div id="adminPanelScreen" class="app-screen">
-        <div class="top-navbar">
-            <h2><i class="fa-solid fa-user-shield"></i> Administration Console</h2>
-        </div>
+        <div class="top-navbar"><h2><i class="fa-solid fa-user-shield"></i> Administration Console</h2></div>
         <div class="form-body">
-            <h3 style="font-size: 14px; margin-bottom: 12px; color: #0f172a; text-transform: uppercase;">Generate Employee Credentials</h3>
+            <h3 style="font-size: 14px; margin-bottom: 12px;">Generate Employee Credentials</h3>
             <form onsubmit="commitNewUserAccount(event)">
-                <div class="form-group"><label>Employee ID (Username)</label><input type="text" id="aNewId" placeholder="e.g. 0301" required></div>
-                <div class="form-group"><label>Full Name</label><input type="text" id="aNewName" placeholder="e.g. Vishal Srivastava" required></div>
+                <div class="form-group"><label>Employee ID</label><input type="text" id="aNewId" required></div>
+                <div class="form-group"><label>Full Name</label><input type="text" id="aNewName" required></div>
                 <div class="form-group">
-                    <label>Role Privilege</label>
+                    <label>Role</label>
                     <select id="aNewRole">
                         <option value="Supervisor">Supervisor</option>
                         <option value="HSE Officer">HSE Officer</option>
                         <option value="Admin">Admin</option>
-                        <option value="Super Admin">Super Admin</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Account Password</label><input type="password" id="aNewPass" placeholder="Set password security" required></div>
+                <div class="form-group"><label>Password</label><input type="password" id="aNewPass" required></div>
                 <button type="submit" class="submit-btn" style="background: #0f172a;">Generate Account</button>
             </form>
         </div>
     </div>
 
+    <!-- ================= SCREEN: REPORTS & DATA LOGS REVIEWS ================= -->
     <div id="reportsScreen" class="app-screen">
-        <div class="top-navbar">
-            <h2><i class="fa-solid fa-folder-open" style="color: #f59e0b;"></i> Live Data Logs</h2>
-        </div>
+        <div class="top-navbar"><h2><i class="fa-solid fa-folder-open" style="color: #f59e0b;"></i> Live Data Logs</h2></div>
         <div class="filter-box">
             <select id="dataMonthDirectorySelect" onchange="renderDirectoryLogs()"></select>
         </div>
         <div id="liveDirectoryLogsList" style="padding: 0 16px;"></div>
     </div>
 
+    <!-- PERSISTENT FOOTER TAB STRIP -->
     <div class="bottom-navbar">
-        <div id="tabHome" class="nav-tab active" onclick="routeToScreen('dashboardScreen')"><i class="fa-solid fa-house"></i>Dashboard</div>
+        <div id="tabHome" class="nav-tab" onclick="routeToScreen('dashboardScreen')"><i class="fa-solid fa-house"></i>Dashboard</div>
         <div id="tabAdmin" class="nav-tab" onclick="routeToScreen('adminPanelScreen')" style="display: none;"><i class="fa-solid fa-user-gear"></i>Admin Power</div>
         <div id="tabLogs" class="nav-tab" onclick="routeToScreen('reportsScreen')"><i class="fa-solid fa-receipt"></i>Reports</div>
     </div>
@@ -244,37 +221,44 @@
         let activeSession = null;
         let batchFormPhotos = [];
         let globalSelectedModule = "";
+        const dateTracker = new Date();
 
-        // Standard color-coding system map corresponding to modular templates
         const moduleThemeConfigs = {
-            'Present': { bg: '#10b981', title: 'Present Form' },
-            'Absent': { bg: '#ef4444', title: 'Absent Form' },
-            'TBT Report': { bg: '#3b82f6', title: 'TBT / PWT Form' },
-            'Mock Drill': { bg: '#f59e0b', title: 'Mock Drill Form' },
-            'Inspection': { bg: '#06b6d4', title: 'Inspection Form' },
-            'Observation': { bg: '#f97316', title: 'Observation & Rectified' },
-            'Monthly Plan': { bg: '#6366f1', title: 'Monthly Plan Form' },
-            'Complaint': { bg: '#ec4899', title: 'Complaint Form' },
-            'Notice Info': { bg: '#14b8a6', title: 'Notice & Info Form' },
-            'Finance': { bg: '#8b5cf6', title: 'Finance Management Form' }
+            'Present': { bg: '#10b981', title: 'Present Form' }, 'Absent': { bg: '#ef4444', title: 'Absent Form' },
+            'TBT Report': { bg: '#3b82f6', title: 'TBT / PWT Form' }, 'Mock Drill': { bg: '#f59e0b', title: 'Mock Drill Form' },
+            'Inspection': { bg: '#06b6d4', title: 'Inspection Form' }, 'Observation': { bg: '#f97316', title: 'Observation & Rectified' },
+            'Monthly Plan': { bg: '#6366f1', title: 'Monthly Plan Form' }, 'Complaint': { bg: '#ec4899', title: 'Complaint Form' },
+            'Notice Info': { bg: '#14b8a6', title: 'Notice & Info Form' }, 'Finance': { bg: '#8b5cf6', title: 'Finance Management Form' }
         };
 
-        // Initialize persistent user matrix database inside browser environment
+        // Initialize Users if not present
         if (!localStorage.getItem("phl_users_db")) {
-            const seedData = {
+            localStorage.setItem("phl_users_db", JSON.stringify({
                 "0301": { id: "0301", name: "Vishal Srivastava", pass: "Vishal", role: "Supervisor" },
                 "PHL1025": { id: "PHL1025", name: "Vishal Kumar", pass: "Vishal", role: "HSE Officer" },
                 "admin01": { id: "admin01", name: "Murti Sir", pass: "Murti", role: "Admin" },
                 "super01": { id: "super01", name: "Rajesh Sir", pass: "Rajesh", role: "Super Admin" }
-            };
-            localStorage.setItem("phl_users_db", JSON.stringify(seedData));
+            }));
         }
 
-        // Initialize operational data tracking folders
-        const dateTracker = new Date();
+        // Setup Month Folders
         const folderSelector = document.getElementById("dataMonthDirectorySelect");
-        const availableFolders = ["2026-06", "2026-07", "2026-08"];
-        folderSelector.innerHTML = availableFolders.map(f => `<option value="${f}">📂 Directory Root: ${f}</option>`).join('');
+        const currentYearMonth = dateTracker.getFullYear() + "-" + String(dateTracker.getMonth() + 1).padStart(2, '0');
+        folderSelector.innerHTML = `<option value="${currentYearMonth}">📂 Current Month: ${currentYearMonth}</option>
+                                    <option value="all_data">📂 View All Global Employee Data</option>`;
+
+        // CHECK PERSISTENT SESSION ON PAGE RELOAD
+        window.addEventListener('load', () => {
+            const savedSession = localStorage.getItem("phl_active_session");
+            const lastScreen = localStorage.getItem("phl_last_screen") || "dashboardScreen";
+            
+            if (savedSession) {
+                activeSession = JSON.parse(savedSession);
+                bootSessionEnvironment(lastScreen);
+            } else {
+                routeToScreen("loginScreen");
+            }
+        });
 
         function handleAuthSubmit(e) {
             e.preventDefault();
@@ -284,59 +268,66 @@
 
             if (usersDb[inputId] && usersDb[inputId].pass === inputPass) {
                 activeSession = usersDb[inputId];
-                bootSessionEnvironment();
+                localStorage.setItem("phl_active_session", JSON.stringify(activeSession));
+                bootSessionEnvironment("dashboardScreen");
             } else {
-                alert("Security mismatch: Invalid Employee ID or Password credentials.");
+                alert("Invalid Credentials.");
             }
         }
 
-        function bootSessionEnvironment() {
+        function bootSessionEnvironment(targetScreen) {
             document.getElementById("profileName").innerText = activeSession.name;
             document.getElementById("profileRole").innerText = "Designation: " + activeSession.role;
             document.getElementById("profileBadge").innerText = "Employee ID: " + activeSession.id;
 
-            const privilegeCheck = activeSession.role.toLowerCase().includes('admin');
+            const isRoleAdmin = activeSession.role.toLowerCase().includes('admin') || activeSession.role.toLowerCase().includes('supervisor');
             
-            // Adjust Themes if Admin Logs in
-            const profileCard = document.getElementById("heroProfileCard");
-            const navBar = document.getElementById("tabHome");
-            
-            if (privilegeCheck) {
-                profileCard.classList.add("admin-mode");
+            if (isRoleAdmin) {
+                document.getElementById("heroProfileCard").classList.add("admin-mode");
                 document.getElementById("adminStatsContainer").style.display = "block";
                 document.getElementById("tabAdmin").style.display = "block";
-                document.getElementById("navRoleTitle").innerHTML = `<i class="fa-solid fa-user-shield"></i> PHL ADMIN CONTROL`;
+                document.getElementById("navRoleTitle").innerHTML = `<i class="fa-solid fa-user-shield"></i> PHL CONTROL PANEL`;
                 refreshAdminStatDashboard();
             } else {
-                profileCard.classList.remove("admin-mode");
+                document.getElementById("heroProfileCard").classList.remove("admin-mode");
                 document.getElementById("adminStatsContainer").style.display = "none";
                 document.getElementById("tabAdmin").style.display = "none";
                 document.getElementById("navRoleTitle").innerHTML = `<i class="fa-solid fa-helmet-safety"></i> PHL USER PANEL`;
             }
 
-            routeToScreen("dashboardScreen");
+            checkAttendanceLock();
+            routeToScreen(targetScreen);
+        }
+
+        function checkAttendanceLock() {
+            const todayStr = new Date().toLocaleDateString('en-GB');
+            const allLogs = getGlobalLogs();
+            const hasAttended = allLogs.some(log => log.empId === activeSession.id && log.date === todayStr && (log.module === 'Present' || log.module === 'Absent'));
+            
+            const isAdmin = activeSession.role.toLowerCase().includes('admin') || activeSession.role.toLowerCase().includes('super');
+
+            if (hasAttended && !isAdmin) {
+                document.getElementById("mod-Present").classList.add("disabled");
+                document.getElementById("mod-Absent").classList.add("disabled");
+            } else {
+                document.getElementById("mod-Present").classList.remove("disabled");
+                document.getElementById("mod-Absent").classList.remove("disabled");
+            }
         }
 
         function refreshAdminStatDashboard() {
             const db = JSON.parse(localStorage.getItem("phl_users_db"));
             document.getElementById("statTotalUsers").innerText = Object.keys(db).length;
-
-            const currentKey = dateTracker.getFullYear() + "-" + String(dateTracker.getMonth() + 1).padStart(2, '0');
-            const totalReports = JSON.parse(localStorage.getItem("phl_master_" + currentKey)) || [];
-            document.getElementById("statTotalReports").innerText = totalReports.length;
+            document.getElementById("statTotalReports").innerText = getGlobalLogs().length;
         }
 
         function routeToScreen(screenId) {
             document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
-
-            const isDarkActive = activeSession && activeSession.role.toLowerCase().includes('admin');
             
-            document.querySelectorAll('.nav-tab').forEach(t => {
-                t.classList.remove('active');
-                t.classList.toggle('admin-active', isDarkActive);
-            });
+            if (activeSession) localStorage.setItem("phl_last_screen", screenId);
 
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             if (screenId === 'dashboardScreen') document.getElementById("tabHome").classList.add("active");
             if (screenId === 'adminPanelScreen') document.getElementById("tabAdmin").classList.add("active");
             if (screenId === 'reportsScreen') {
@@ -351,75 +342,120 @@
             document.getElementById("uploadedPhotosGrid").innerHTML = "";
             document.getElementById("hseMasterInputForm").reset();
 
-            const config = moduleThemeConfigs[moduleName] || { bg: '#157347', title: 'HSE Entry Form' };
-            
-            // Modify dynamic theme layout parameters
-            const header = document.getElementById("dynamicFormHeader");
-            header.style.background = config.bg;
+            const config = moduleThemeConfigs[moduleName] || { bg: '#157347', title: 'HSE Form' };
+            document.getElementById("dynamicFormHeader").style.background = config.bg;
             document.getElementById("formHeaderLabel").innerText = config.title;
             document.getElementById("formSubmitBtn").style.background = config.bg;
 
-            // Compute structural clock components
             const rightNow = new Date();
-            document.getElementById("fDate").value = rightNow.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-            document.getElementById("fTime").value = rightNow.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) + " (Auto)";
+            document.getElementById("fDate").value = rightNow.toLocaleDateString('en-GB');
+            document.getElementById("fTime").value = rightNow.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             document.getElementById("fEmpId").value = activeSession.id;
             document.getElementById("fEmpName").value = activeSession.name;
 
             document.getElementById("remarksFieldBlock").style.display = (moduleName==='Present'||moduleName==='Absent') ? "none" : "block";
-            
             routeToScreen("formScreen");
         }
 
-        function navigateBackToDashboard() {
-            routeToScreen("dashboardScreen");
-        }
-
-        // Photo Grid Logic with local base64 compression arrays
         function handleIncomingPhotoCompression() {
             const input = document.getElementById("multiImageSystemInput");
             if (!input.files || !input.files[0]) return;
-
             const fileReader = new FileReader();
             fileReader.onload = function(e) {
-                const base64Data = e.target.result;
-                batchFormPhotos.push(base64Data);
-
-                // Re-render thumbnail grid preview inside active viewport
+                batchFormPhotos.push(e.target.result);
                 const imgNode = document.createElement("img");
-                imgNode.src = base64Data;
+                imgNode.src = e.target.result;
                 imgNode.className = "photo-preview-item";
                 document.getElementById("uploadedPhotosGrid").appendChild(imgNode);
             };
             fileReader.readAsDataURL(input.files[0]);
-            input.value = ""; // Clear file string target pointer
+            input.value = "";
         }
 
         function processFormSave(e) {
             e.preventDefault();
-            const targetFolderKey = dateTracker.getFullYear() + "-" + String(dateTracker.getMonth() + 1).padStart(2, '0');
+            const currentFolderKey = dateTracker.getFullYear() + "-" + String(dateTracker.getMonth() + 1).padStart(2, '0');
 
             const logPayload = {
+                uid: 'id_' + Math.random().toString(36).substr(2, 9),
                 module: globalSelectedModule,
                 date: document.getElementById("fDate").value,
                 time: document.getElementById("fTime").value,
                 location: document.getElementById("fLocation").value,
                 empId: activeSession.id,
                 name: activeSession.name,
-                remarks: (globalSelectedModule === 'Present' || globalSelectedModule === 'Absent') ? globalSelectedModule.toUpperCase() : document.getElementById("fRemarks").value,
+                remarks: document.getElementById("fRemarks").value || globalSelectedModule,
                 photos: batchFormPhotos
             };
 
-            let directoryLogs = JSON.parse(localStorage.getItem("phl_master_" + targetFolderKey)) || [];
+            let directoryLogs = JSON.parse(localStorage.getItem("phl_master_" + currentFolderKey)) || [];
             directoryLogs.unshift(logPayload);
-            localStorage.setItem("phl_master_" + targetFolderKey, JSON.stringify(directoryLogs));
+            localStorage.setItem("phl_master_" + currentFolderKey, JSON.stringify(directoryLogs));
 
-            alert("Report cataloged successfully inside database storage!");
-            if(activeSession.role.toLowerCase().includes('admin')) refreshAdminStatDashboard();
-            routeToScreen("reportsScreen");
+            alert("Report saved successfully!");
+            checkAttendanceLock();
+            bootSessionEnvironment("reportsScreen");
         }
 
-        // Admin functionality: Add Users securely inside local arrays
+        function getGlobalLogs() {
+            let combined = [];
+            const currentFolderKey = dateTracker.getFullYear() + "-" + String(dateTracker.getMonth() + 1).padStart(2, '0');
+            const dataCurrent = JSON.parse(localStorage.getItem("phl_master_" + currentFolderKey)) || [];
+            return dataCurrent;
+        }
+
+        function renderDirectoryLogs() {
+            const mode = document.getElementById("dataMonthDirectorySelect").value;
+            const container = document.getElementById("liveDirectoryLogsList");
+            let entries = getGlobalLogs();
+
+            // Filter out regular employees to only see their own data
+            const isAdmin = activeSession.role.toLowerCase().includes('admin') || activeSession.role.toLowerCase().includes('super') || activeSession.role.toLowerCase().includes('supervisor');
+            if (!isAdmin) {
+                entries = entries.filter(item => item.empId === activeSession.id);
+            }
+
+            if (entries.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:40px; color:#94a3b8;">No records found.</div>`;
+                return;
+            }
+
+            container.innerHTML = entries.map(item => {
+                const config = moduleThemeConfigs[item.module] || { bg: '#157347' };
+                const showDeleteBtn = isAdmin && (item.module === 'Present' || item.module === 'Absent');
+                return `
+                    <div class="data-receipt-card" style="border-left-color: ${config.bg}">
+                        <div class="receipt-title-row">
+                            <h4 style="color: ${config.bg}">${item.module} Log</h4>
+                            <span class="receipt-time">${item.date} | ${item.time}</span>
+                        </div>
+                        <div class="receipt-row"><span>Employee</span><span>${item.name} (${item.empId})</span></div>
+                        <div class="receipt-row"><span>Location</span><span>${item.location}</span></div>
+                        <div class="receipt-row"><span>Details</span><span>${item.remarks}</span></div>
+                        ${item.photos && item.photos.length > 0 ? `
+                            <div class="receipt-gallery">
+                                ${item.photos.map(p => `<img src="${p}" onclick="window.open(this.src)">`).join('')}
+                            </div>
+                        ` : ''}
+                        ${showDeleteBtn ? `<button class="reset-attendance-btn" onclick="removeAttendance('${item.uid}')">Reset Attendance</button>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function removeAttendance(uid) {
+            if (!confirm("Are you sure you want to remove this employee's attendance?")) return;
+            const currentFolderKey = dateTracker.getFullYear() + "-" + String(dateTracker.getMonth() + 1).padStart(2, '0');
+            let directoryLogs = JSON.parse(localStorage.getItem("phl_master_" + currentFolderKey)) || [];
+            
+            directoryLogs = directoryLogs.filter(log => log.uid !== uid);
+            localStorage.setItem("phl_master_" + currentFolderKey, JSON.stringify(directoryLogs));
+            
+            alert("Attendance removed successfully!");
+            checkAttendanceLock();
+            renderDirectoryLogs();
+        }
+
         function commitNewUserAccount(e) {
             e.preventDefault();
             const targetId = document.getElementById("aNewId").value.trim();
@@ -428,56 +464,19 @@
             const targetPass = document.getElementById("aNewPass").value.trim();
 
             let usersDb = JSON.parse(localStorage.getItem("phl_users_db"));
-            if (usersDb[targetId]) {
-                alert("Conflict Alert: This Employee ID already exists inside system records.");
-                return;
-            }
-
             usersDb[targetId] = { id: targetId, name: targetName, pass: targetPass, role: targetRole };
             localStorage.setItem("phl_users_db", JSON.stringify(usersDb));
 
-            alert(`Credential generated successfully!\nID: ${targetId}\nPassword: ${targetPass}`);
+            alert(`Account Generated for ${targetName}`);
             e.target.reset();
-            refreshAdminStatDashboard();
-            routeToScreen("dashboardScreen");
+            bootSessionEnvironment("dashboardScreen");
         }
 
-        function renderDirectoryLogs() {
-            const targetKey = document.getElementById("dataMonthDirectorySelect").value;
-            const container = document.getElementById("liveDirectoryLogsList");
-            const entries = JSON.parse(localStorage.getItem("phl_master_" + targetKey)) || [];
-
-            if (entries.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:40px; color:#94a3b8; font-size:13px;">No matching directory data receipts discovered inside folder root.</div>`;
-                return;
-            }
-
-            container.innerHTML = entries.map(item => {
-                const config = moduleThemeConfigs[item.module] || { bg: '#157347' };
-                return `
-                    <div class="data-receipt-card" style="border-left-color: ${config.bg}">
-                        <div class="receipt-title-row">
-                            <h4 style="color: ${config.bg}">${item.module} Form</h4>
-                            <span class="receipt-time">${item.date} | ${item.time}</span>
-                        </div>
-                        <div class="receipt-row"><span>Location</span><span>${item.location}</span></div>
-                        <div class="receipt-row"><span>Employee ID</span><span>${item.empId}</span></div>
-                        <div class="receipt-row"><span>Employee Name</span><span>${item.name}</span></div>
-                        <div class="receipt-row"><span>Details</span><span>${item.remarks}</span></div>
-                        ${item.photos && item.photos.length > 0 ? `
-                            <div class="receipt-gallery">
-                                ${item.photos.map(p => `<img src="${p}" onclick="window.open(this.src)">`).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            }).join('');
-        }
-
+        function navigateBackToDashboard() { bootSessionEnvironment("dashboardScreen"); }
         function triggerLogout() {
+            localStorage.removeItem("phl_active_session");
+            localStorage.removeItem("phl_last_screen");
             activeSession = null;
-            document.getElementById("authEmpId").value = "";
-            document.getElementById("authPassword").value = "";
             routeToScreen("loginScreen");
         }
     </script>
